@@ -1,0 +1,105 @@
+<html>
+	<!-- This is the template file. Any code written here will automatically be carried onto the files that extend from this file(eg: home.html, account.html) -->
+	<head>
+		<link rel="stylesheet" href="../static/bootstrap.min.css">
+
+		<title>OpenAI image gen</title>
+
+	</head>
+
+	<body>
+
+		<div class="p-4 w-100" style="max-width: 500px;">
+			<p>Describe the image you want to create</p>
+
+			<form action="/api/image/" method="POST">
+				<div><textarea name="description" class="text-body w-100"></textarea></div>
+				<div class="mt-4">
+					<button type="submit" class="d-flex align-items-center btn btn-primary">
+						<div class="me-2">Generate image</div>
+						<div class="d-none spinner-border spinner-border-sm text-light" role="status"></div>
+					</button>
+				</div>
+			</form>
+
+			<div class="pt-3"><img id="image-rendered" class="w-100"></div>
+
+		</div>
+
+
+		<script>
+			function autoExpandTextarea () {
+				function getHeight (el, maxHeight) {
+					return Math.min(el.scrollHeight, maxHeight+8);
+				}
+
+				document.querySelectorAll('textarea').forEach(function (textarea) {
+					var maxHeight = 300,
+						height = getHeight(textarea, maxHeight);
+
+					if (height < 100) {height = 100}
+
+					textarea.style.height = height + 3 + 'px';
+
+					textarea.addEventListener('input', function (evt) {
+						let height = getHeight(textarea, maxHeight);
+						textarea.style.height = getHeight(textarea, maxHeight)+2 + 'px';
+					});
+				});
+			}
+			autoExpandTextarea();
+
+			function showImage (url) {
+				document.querySelector('#image-rendered').src=url;
+			}
+
+			function toggleSpinner () {
+				document.querySelector('.spinner-border').classList.toggle('d-none');
+			}
+
+			function toggleImage () {
+				document.querySelector('#image-rendered').classList.toggle('d-none');
+			}
+
+
+			function setupFormSubmit (evt) {
+				evt.preventDefault();
+
+				toggleSpinner();
+				toggleImage();
+
+				fetch(evt.target.action,
+					{
+						method: evt.target.method,
+						body: JSON.stringify({
+							'description': document.querySelector('textarea[name=description]').value
+						}),
+						headers: {
+							Accept: 'application/json',
+							'Content-Type': 'application/json',
+						},
+					})
+					.then((response) => response.json())
+					.then((responseJson) => {
+						if (responseJson.url) {
+							showImage(responseJson.url);
+							toggleSpinner();
+							toggleImage();
+						} else {
+							alert(
+								'We were unable to create an image.'
+							);
+						}
+					})
+					.catch(function (error) {
+						console.warn(error);
+					});
+
+			}
+
+			document.querySelector('form').addEventListener('submit', setupFormSubmit)
+
+		</script>
+
+	</body>
+</html>

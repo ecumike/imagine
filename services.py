@@ -17,8 +17,11 @@ def generate_image(description):
     )
 
     try:
-        image_url = image_generation.data[0].url
+        image_data = {
+            'image_url': image_generation.data[0].url,
+            'revised_prompt': image_generation.data[0].revised_prompt
+        }
     except Exception:
-        image_url = ''
+        image_data = {}
 
-    return image_url
+    return image_data

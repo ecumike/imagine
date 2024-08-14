@@ -22,12 +22,11 @@ def get_image():
     Takes posted description and requests an image from openAI.
     Returns URL
     '''
-    image_url = ''
-
+    image_data = {}
     if request.method == 'POST':
-        image_url = generate_image(request.json['description'])
+        image_data = generate_image(request.json['description'])
 
-    return {'url': image_url}
+    return image_data
 
 
 if __name__ == '__main__':

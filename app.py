@@ -3,9 +3,16 @@ Main app file.
 To run:   flask run
 '''
 
+import logging
+
 from flask import Flask, render_template, request
 from services import generate_image
 
+# Print INFO logs (and above) to the terminal so we can see requests/responses.
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
 
 app = Flask(__name__) #initialising flask
 
